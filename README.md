@@ -4,15 +4,16 @@ This project demonstrates the setup of infrastructure on AWS using Terraform and
 
 ## Table of Contents
 
-- [Part 1: Infrastructure Setup with Terraform](#part-1-infrastructure-setup-with-terraform)
-- [Part 2: Infrastructure Setup with Ansible](#1-aws-setup-and-terraform-initialization)
-
-  - [1. Web Server Setup](#2-web-server-setup)
-  - [2. Database Server Setup](#3-database-server-setup)
-  - [3. Application Deployment](#4-application-deployment)
-
-- [Usage](#usage)
-- [Notes](#notes)
+- [Infrastructure Setup with Terraform and Configuration and Deployment with Ansible](#infrastructure-setup-with-terraform-and-configuration-and-deployment-with-ansible)
+  - [Table of Contents](#table-of-contents)
+  - [Part 1: Infrastructure Setup with Terraform](#part-1-infrastructure-setup-with-terraform)
+  - [Part 2: Infrastructure Setup with Ansible](#part-2-infrastructure-setup-with-ansible)
+    - [Web Server Setup](#web-server-setup)
+    - [Database Server Setup](#database-server-setup)
+    - [Application Deployment](#application-deployment)
+    - [Security Hardening](#security-hardening)
+    - [Usage](#usage)
+    - [Notes](#notes)
 
 ## Part 1: Infrastructure Setup with Terraform
 
@@ -109,6 +110,33 @@ Create a playbook (app_deployment.yml) to configure environment variables and st
       command: npm start
       args:
         chdir: /path/to/application
+```
+
+### Security Hardening
+Implement Security Measures
+Ensure proper security measures are implemented, such as configuring firewalls, security groups, SSH key pairs, and disabling root login.
+
+```yml
+- name: Configure Firewall
+  hosts: all
+  become: yes
+  tasks:
+    - name: Allow SSH Port
+      ufw:
+        rule: allow
+        port: ssh
+      notify: restart ufw
+
+- name: Disable Root Login
+  hosts: all
+  become: yes
+  tasks:
+    - name: Disable Root Login
+      replace:
+        path: /etc/ssh/sshd_config
+        regexp: '^PermitRootLogin yes'
+        replace: 'PermitRootLogin no'
+      notify: restart ssh
 ```
 
 ### Usage
